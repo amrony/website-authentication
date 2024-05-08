@@ -1,8 +1,11 @@
+// databse encryption authentication
+
 require("dotenv").config();
 const mongoose = require('mongoose');
 const express = require('express');
 const cors = require('cors');
 const app = express();
+
 
 const User = require('./models/user');
 
