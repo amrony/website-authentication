@@ -1,14 +1,11 @@
-// hasing password
+// databse encryption authentication
 
 require("dotenv").config();
 const mongoose = require('mongoose');
 const express = require('express');
 const cors = require('cors');
-var md5 = require('md5');
-
-// console.log("message", md5('message'));
-
 const app = express();
+
 
 const User = require('./models/user');
 
@@ -46,7 +43,7 @@ app.post('/register', async(req, res) => {
   try {
     const newUser = new User({
       email: email,
-      password: md5('password'),
+      password: password,
     });
 
     const user = await newUser.save()
@@ -68,7 +65,7 @@ app.post('/login', async(req, res) => {
           email: email
         });
 
-      if(user && user.password == md5('password')){
+      if(user && user.password == password){
         res.status(200).json({status: 'Valid User'});
       }else{
         res.status(401).json({status: 'User Not Found'});
