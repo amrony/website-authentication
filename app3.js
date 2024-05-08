@@ -1,12 +1,14 @@
-// hasing + salting password authentication
+// hasing password
 
 require("dotenv").config();
 const mongoose = require('mongoose');
 const express = require('express');
 const cors = require('cors');
+var md5 = require('md5');
+
+// console.log("message", md5('message'));
+
 const app = express();
-const bcrypt = require('bcrypt');
-const saltRounds = 10;
 
 const User = require('./models/user');
 
@@ -42,22 +44,17 @@ app.post('/register', async(req, res) => {
   const { email, password } = req.body;
 
   try {
-    
-    bcrypt.hash(password, saltRounds, async function(err, hash) {
-      const newUser = new User({
-        email: email,
-        password: hash,
-      });
-
-      await newUser.save()
-
-      res.status(201).json({
-        newUser
-      });
-
+    const newUser = new User({
+      email: email,
+      password: md5('password'),
     });
 
+    const user = await newUser.save()
 
+    console.log('New user created:', user)
+    res.status(201).json({
+      user
+    });
     
   } catch (error) {
     res.status(500).json(error)
@@ -71,12 +68,8 @@ app.post('/login', async(req, res) => {
           email: email
         });
 
-      if(user){
-        bcrypt.compare(password, user.password, function(err, result) {
-          if(result == true){
-            res.status(200).json({status: 'Valid User'});
-          }
-        });
+      if(user && user.password == md5('password')){
+        res.status(200).json({status: 'Valid User'});
       }else{
         res.status(401).json({status: 'User Not Found'});
       }
